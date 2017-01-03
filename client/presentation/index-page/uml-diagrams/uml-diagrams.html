@@ -1,0 +1,41 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/iron-ajax/iron-ajax.html">
+
+<link rel="import" href="uml-diagram/uml-diagram.html">
+
+<dom-module id="uml-diagrams">
+  <style>
+
+  </style>
+
+  <template>
+    <iron-ajax
+        auto
+        url="http://127.0.0.1:3000/api/diagrams"
+        handle-as="json"
+        last-response="{{response}}"
+    ></iron-ajax>
+
+    <ul>
+      <template is="dom-repeat" items="{{response}}">
+        <uml-diagram diagram="{{item}}"></uml-diagram>
+      </template>
+    </ul>
+  </template>
+
+  <script>
+
+    Polymer(
+    {
+      is: "uml-diagrams",
+      properties: {
+        diagrams: {
+          value: "[]",
+          type: Object,
+          notify: true
+        }
+      }
+    });
+
+  </script>
+</dom-module>

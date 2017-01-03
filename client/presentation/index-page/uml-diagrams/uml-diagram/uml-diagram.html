@@ -1,0 +1,27 @@
+<link rel="import" href="../../../../bower_components/polymer/polymer.html">
+
+<dom-module id="uml-diagram">
+  <style>
+    
+  </style>
+
+  <template>
+    <li><a href="#/diagram/{{diagram.name}}">{{diagram.name}}</a></li>
+  </template>
+
+  <script>
+
+    Polymer(
+    {
+      is: "uml-diagram",
+      properties:
+      {
+        diagram:
+        {
+          type: Object
+        }
+      }
+    });
+
+  </script>
+</dom-module>

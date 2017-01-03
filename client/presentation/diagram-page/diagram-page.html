@@ -1,0 +1,28 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/socket-io-connection/socket-io-connection.html">
+
+<dom-module id="diagram-page">
+    <template>
+      <socket-io-connection url="/" auto>
+        <socket-io-receiver id="chat-message-receiver" on="chat message"></socket-io-receiver>
+      </socket-io-connection>
+
+    </template>
+
+    <script>
+      Polymer(
+      {
+        is: "diagram-page",
+
+        ready: function()
+        {
+          console.log("ready");
+          this.$["chat-message-receiver"].addEventListener("received", (event) =>
+          {
+            let data = event.detail;
+            console.log(data);
+          });
+        }
+      });
+    </script>
+</dom-module>

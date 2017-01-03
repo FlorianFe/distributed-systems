@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>UML Editor - Server</title>
+
+    <link rel="import" href="server/components/uml-server-app/uml-server-app.html">
+  </head>
+  <body>
+
+    <uml-server-app></uml-server-app>
+
+    <script src="server/CommandExecuter.js"></script>
+    <script src="server/Command.js"></script>
+
+    <script src="server/commands/AddClassToPackageCommand.js"></script>
+    <script src="server/commands/AddUserToDiagramCommand.js"></script>
+
+    <script src="server/model/Entity.js"></script>
+    <script src="server/model/EntityMap.js"></script>
+    <script src="server/model/DiagramCollection.js"></script>
+    <script src="server/model/Diagram.js"></script>
+
+    <script src="server/model/diagram - internals/Component.js"></script>
+    <script src="server/model/diagram - internals/Edge.js"></script>
+
+    <script src="server/model/diagram - internals/Collections/ChatLineCollection.js"></script>
+    <script src="server/model/diagram - internals/Collections/UserCollection.js"></script>
+
+    <script src="server/model/diagram - internals/items/ChatLine.js"></script>
+    <script src="server/model/diagram - internals/items/User.js"></script>
+
+    <script src="server/model/diagram - internals/components/Composite.js"></script>
+    <script src="server/model/diagram - internals/components/Leaf.js"></script>
+
+    <script src="server/model/diagram - internals/components/composites/UMLPackage.js"></script>
+
+    <script src="server/model/diagram - internals/components/leafs/UMLClass.js"></script>
+
+    <script src="index.js"></script>
+    <script src="server/main.js"></script>
+
+  </body>
+</html>
