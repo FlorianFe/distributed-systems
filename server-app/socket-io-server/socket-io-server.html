@@ -1,0 +1,101 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="socket-io-server">
+  <template>
+
+  </template>
+
+  <script>
+    Polymer(
+    {
+      is: "socket-io-server",
+      properties:
+      {
+        http:
+        {
+          type: Object,
+          observer: "_onHTTPSet"
+        },
+        io:
+        {
+          type: Object,
+          value: null
+        },
+        port:
+        {
+          type: Number,
+          value: 2000
+        },
+        commandExecuter: Object,
+        diagramCollection: Object,
+        entityMap: Object,
+        serverLog: Object
+      },
+      start: function()
+      {
+        this.io = require("socket.io").listen(this.port);
+        this.serverLog.printInformation("Socket.IO Server started on port " + this.port);
+
+        this.io.on('connection', (socket) =>
+        {
+          let ip = socket.handshake.address;
+          this.fire('user-connected', {ip: ip});
+
+          socket.on('register', (data) =>
+          {
+            let userName = data.userName;
+            let cursor = new Cursor(0, 0);
+            let user = new User(userName, cursor);
+            let diagram = this.diagramCollection.getDiagramByName("Neues Diagramm");
+
+            socket.user = user;
+
+            this.serverLog.printInformation(ip + ' registered his-/herself as "' + user.getName() + '"');
+            this.commandExecuter.executeCommand(new AddUserToDiagramCommand(user, diagram));
+            this.io.sockets.emit("diagram-update", {diagram: diagram});
+          });
+
+          socket.on('cursor-move', (data) =>
+          {
+            let user = socket.user;
+            let diagram = this.diagramCollection.getDiagramByName("Neues Diagramm");
+            let x = data.x;
+            let y = data.y;
+
+            this._execute(user, new CursorMoveCommand(user, diagram, x, y));
+            this.io.sockets.emit("diagram-update", {diagram: diagram});
+          });
+
+          socket.on('disconnect', () =>
+          {
+            let diagram = this.diagramCollection.getDiagramByName("Neues Diagramm");
+            let userCollection = diagram.getUserCollection();
+            let user = socket.user;
+
+            userCollection.removeUser(user);
+            this.io.sockets.emit("diagram-update", {diagram: diagram});
+          })
+        });
+      },
+      _execute: function(user, command)
+      {
+        if(user)
+        {
+          try
+          {
+            this.commandExecuter.executeCommand(command);
+            this.serverLog.printInformation(user.getName() + ' triggered ' + command.constructor.name);
+          }
+          catch(e)
+          {
+            this.serverLog.printError(user.getName() + ' failed on triggering ' + command.constructor.name);
+          }
+        }
+        else
+        {
+          this.serverLog.printWarning('Someone unregistered tried to  trigger ' + command.constructor.name);
+        }
+      }
+    });
+  </script>
+</dom-module>

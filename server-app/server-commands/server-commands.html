@@ -1,0 +1,31 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="server-commands">
+  <template>
+
+  </template>
+
+  <script>
+    Polymer(
+    {
+      is: "server-commands",
+      properties:
+      {
+        commandExecuter: Object
+      },
+      ready: function()
+      {
+        this.commandExecuter = new CommandExecuter();
+      }
+    });
+
+  </script>
+
+  <script src="Command.js"></script>
+  <script src="CommandExecuter.js"></script>
+
+  <script src="commands/AddClassToPackageCommand.js"></script>
+  <script src="commands/AddDiagramToDiagramCollectionCommand.js"></script>
+  <script src="commands/AddUserToDiagramCommand.js"></script>
+  <script src="commands/CursorMoveCommand.js"></script>
+</dom-module>

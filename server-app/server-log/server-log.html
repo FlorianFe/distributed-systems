@@ -1,0 +1,127 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="server-log">
+  <template>
+
+    <style is="custom-style">
+
+      .information
+      {
+        --iron-icon-fill-color: #2196f3;
+      }
+
+      .warning
+      {
+        --iron-icon-fill-color: #ff9800;
+      }
+
+      .error
+      {
+        --iron-icon-fill-color: #f44336;
+      }
+
+      paper-badge
+      {
+        --paper-badge-background: #2196f3;
+      }
+
+    </style>
+
+    <div id="scroll-area">
+      <template is="dom-repeat" items="[[logLines]]" as="logLine">
+        <paper-icon-item>
+          <iron-icon class$="[[logLine.type]]" icon="[[logLine.icon]]" item-icon></iron-icon>
+          <paper-item-body two-line>
+            <div>
+              <span>[[logLine.type]]</span>
+              <paper-badge label="[[logLine.amount]]"></paper-badge>
+            </div>
+            <div secondary>[[logLine.message]]</div>
+          </paper-item-body>
+        </paper-icon-item>
+      </template>
+    </template>
+  </div>
+
+  <script>
+    Polymer(
+    {
+      is: "server-log",
+      properties:
+      {
+        logLines:
+        {
+          type: Array,
+          value: []
+        }
+      },
+      printInformation: function(logMessage)
+      {
+        if(this._isLastLogMessage(logMessage))
+        {
+          this.logLines[0].amount++;
+          this.notifyPath('logLines.0.amount');
+        }
+        else
+        {
+          this.unshift('logLines',
+          {
+            message: logMessage,
+            type: "information",
+            icon: "icons:question-answer",
+            amount: 1
+          });
+        }
+      },
+      printWarning: function(logMessage)
+      {
+        if(this._isLastLogMessage(logMessage))
+        {
+          let amount = this.get(["logLines", 0]);
+          this.set("logLines.0", amount + 1);
+        }
+        else
+        {
+          this.unshift('logLines',
+          {
+            message: logMessage,
+            type: "warning",
+            icon: "icons:announcement",
+            amount: 1
+          });
+        }
+      },
+      printError: function(logMessage)
+      {
+        if(this._isLastLogMessage(logMessage))
+        {
+          let amount = this.get("logLines", 0);
+          this.set("logLines.0", amount + 1);
+        }
+        else
+        {
+          this.unshift('logLines',
+          {
+            message: logMessage,
+            type: "error",
+            icon: "icons:bug-report",
+            amount: 1
+          });
+        }
+      },
+      _isLastLogMessage(logMessage)
+      {
+        if(this.logLines.length > 0)
+          return logMessage === this.logLines[0].message;
+
+        return false;
+      }
+    });
+
+  </script>
+</dom-module>

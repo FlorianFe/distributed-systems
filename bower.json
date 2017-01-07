@@ -1,0 +1,34 @@
+{
+  "name": "distributed-systems",
+  "description": "Multiuser UML-Editor",
+  "main": "index.js",
+  "authors": [
+    "GitHub"
+  ],
+  "license": "CC0-1.0",
+  "keywords": [
+    "Electron"
+  ],
+  "homepage": "https://github.com/FlorianFe/distributed-systems",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "iron-icons": "PolymerElements/iron-icons#^1.2.0",
+    "iron-pages": "PolymerElements/iron-pages#^1.0.8",
+    "juicy-jsoneditor": "Juicy/juicy-jsoneditor#^1.1.0",
+    "paper-button": "PolymerElements/paper-button#^1.0.14",
+    "paper-input": "PolymerElements/paper-input#^1.1.22",
+    "paper-item": "PolymerElements/paper-item#^1.2.1",
+    "paper-tabs": "PolymerElements/paper-tabs#^1.7.0",
+    "polymer": "Polymer/Polymer#^1.7.1",
+    "socket-io-connection": "florianfe/socket-io-connection",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.4.3",
+    "paper-card": "PolymerElements/paper-card#^1.1.4",
+    "paper-badge": "PolymerElements/paper-badge#^1.1.4"
+  }
+}

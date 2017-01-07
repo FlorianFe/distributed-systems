@@ -1,0 +1,97 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/paper-card/paper-card.html">
+
+<dom-module id="app-configuration">
+  <template>
+
+    <style>
+
+      :host
+      {
+        width: 100%;
+      }
+
+      .flex-container
+      {
+          display: flex;
+      }
+
+      h2
+      {
+        font-family: monospace;
+        color: #2196f3;
+        text-align: center;
+      }
+
+      .flex-end
+      {
+        justify-content: flex-end;
+      }
+
+      .flex-item
+      {
+        flex-grow: 1;
+        margin: 25px;
+        padding: 25px;
+      }
+
+    </style>
+
+    <div class="flex-container space-around">
+      <paper-card class="flex-item">
+        <h2>Server</h2>
+        <paper-input id="server-port-input" label="Portnummer" value="3000"></paper-input>
+        <div class="flex-container">
+          <paper-button id="server-button" class="flex-item" raised>Starte Server</paper-button>
+        </div>
+      </paper-card>
+
+      <paper-card class="flex-item">
+        <h2>Client</h2>
+        <paper-input id="client-ip-input" label="IP" value="127.0.0.1"></paper-input>
+        <paper-input id="client-port-input" label="Portnummer" value="3000"></paper-input>
+        <paper-input id="client-username-input" label="Name"></paper-input>
+        <div class="flex-container">
+          <paper-button id="client-button" class="flex-item" raised>Starte Client</paper-button>
+        </div>
+      </paper-card>
+    </div>
+  </template>
+
+  <script>
+
+    Polymer(
+    {
+      is: "app-configuration",
+      ready: function()
+      {
+        this.$["server-button"].addEventListener("click", () =>
+        {
+          let serverPort = this.$["server-port-input"].value;
+
+          this.fire("server-app-choosen",
+          {
+            port : serverPort
+          });
+        });
+
+        this.$["client-button"].addEventListener("click", () =>
+        {
+          let clientIp = this.$["client-ip-input"].value;
+          let clientPort = this.$["client-port-input"].value;
+          let clientUsername = this.$["client-username-input"].value;
+
+          this.fire("client-app-choosen",
+          {
+            ip: clientIp,
+            port: clientPort,
+            username: clientUsername
+          });
+        });
+      }
+    });
+
+  </script>
+</dom-module>

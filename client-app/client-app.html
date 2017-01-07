@@ -1,0 +1,77 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/socket-io-connection/socket-io-connection.html">
+
+<link rel="import" href="diagram-page/diagram-page.html">
+
+<dom-module id="client-app">
+  <template>
+
+    <style is="custom-style">
+
+    :root
+    {
+      --my-custom-color: #dddddd;
+      --paper-tab-ink: var(--my-custom-color);
+      --paper-tabs-selection-bar-color: #2196f3;
+
+      --paper-tabs:
+      {
+          color: #2196f3;
+          font-size: 18px;
+      }
+    }
+
+    </style>
+
+    <socket-io-connection id="socket-io-connection" url="http://[[ip]]:[[port]]" auto></socket-io-connection>
+    <socket-io-receiver id="diagram-update-receiver" on="diagram-update"></socket-io-receiver>
+    <socket-io-emitter id="register-emitter" event="register"></socket-io-emitter>
+
+    <paper-tabs id="tab-menu" selected="0">
+      <paper-tab>Diagram</paper-tab>
+      <paper-tab>Chat</paper-tab>
+    </paper-tabs>
+
+    <iron-pages id="iron-pages" selected="0">
+      <diagram-page id="diagram-page"></diagram-page>
+      <chat-page id="chat-page"></chat-page>
+    </iron-pages>
+
+  </template>
+
+  <script>
+    Polymer(
+    {
+      is: "client-app",
+      properties:
+      {
+        ip: String,
+        port: Number,
+        username: String
+      },
+      ready: function()
+      {
+        this.$["socket-io-connection"].addEventListener("connected", (data) =>
+        {
+          let socket = data.detail.socket;
+
+          this.$["diagram-update-receiver"].socket = socket;
+          this.$["register-emitter"].socket = socket;
+          this.$["diagram-page"].socket = socket;
+          this.$["chat-page"].socket = socket;
+
+          this.$["register-emitter"].emit({userName: this.username});
+
+          this.$["diagram-update-receiver"].addEventListener("received", (data) =>
+          {
+            let diagram = data.detail.diagram;
+            this.$["diagram-page"].diagram = diagram;
+            this.$["chat-page"].diagram = diagram;
+          });
+        });
+      }
+    });
+  </script>
+</dom-module>

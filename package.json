@@ -1,22 +1,22 @@
 {
-  "name": "electron-quick-start",
+  "name": "distributed-systems",
   "version": "1.0.0",
-  "description": "A minimal Electron application",
-  "main": "main.js",
+  "description": "Multiuser UML-Editor",
+  "main": "index.js",
   "scripts": {
     "start": "electron ."
   },
-  "repository": "https://github.com/electron/electron-quick-start",
+  "repository": "https://github.com/florianfe/ditributed-systems",
   "keywords": [
-    "Electron",
-    "quick",
-    "start",
-    "tutorial",
-    "demo"
+    "Electron"
   ],
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^1.4.1"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.7.2"
   }
 }

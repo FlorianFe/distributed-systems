@@ -1,0 +1,50 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="server-entities">
+  <template>
+
+  </template>
+
+  <script>
+    Polymer(
+    {
+      is: "server-entities",
+      properties:
+      {
+        diagramCollection: Object,
+        entityMap: Object
+      },
+      ready: function()
+      {
+        this.entityMap = new EntityMap();
+        Entity.setEntityMap(this.entityMap);
+
+        this.diagramCollection = new DiagramCollection();
+        this.diagramCollection.addDiagram(new Diagram("Neues Diagramm"));
+      }
+    });
+
+  </script>
+
+  <script src="Entity.js"></script>
+  <script src="EntityMap.js"></script>
+  <script src="DiagramCollection.js"></script>
+  <script src="Diagram.js"></script>
+
+  <script src="diagram - internals/Component.js"></script>
+  <script src="diagram - internals/Edge.js"></script>
+
+  <script src="diagram - internals/Collections/ChatLineCollection.js"></script>
+  <script src="diagram - internals/Collections/UserCollection.js"></script>
+
+  <script src="diagram - internals/items/ChatLine.js"></script>
+  <script src="diagram - internals/items/User.js"></script>
+  <script src="diagram - internals/items/Cursor.js"></script>
+
+  <script src="diagram - internals/components/Composite.js"></script>
+  <script src="diagram - internals/components/Leaf.js"></script>
+
+  <script src="diagram - internals/components/composites/UMLPackage.js"></script>
+
+  <script src="diagram - internals/components/leafs/UMLClass.js"></script>
+</dom-module>

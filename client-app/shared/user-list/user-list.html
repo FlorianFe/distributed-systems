@@ -1,0 +1,51 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/socket-io-connection/socket-io-connection.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+
+<link rel="import" href="../../../bower_components/iron-icons/social-icons.html">
+<link rel="import" href="../../../bower_components/iron-icon/iron-icon.html">
+
+<dom-module id="user-list">
+    <template>
+
+      <div>
+        <template is="dom-repeat" items="[[users]]" as="user">
+          <paper-item class="user-item">
+            <iron-icon icon="social:person" class="user-item-icon"></iron-icon>
+            [[user.name]]
+          </paper-item>
+        </template>
+      </div>
+
+    </template>
+
+    <script>
+
+      Polymer(
+      {
+        is: "user-list",
+
+        properties:
+        {
+          users:
+          {
+            type: Array,
+            value: [],
+            observer: "_onUsersChanged"
+          }
+        },
+
+        _onUsersChanged: function()
+        {
+          let userItemIcons = this.querySelectorAll(".user-item-icon");
+
+          for(let i=0; i<this.users.length; i++)
+          {
+            userItemIcons[i].customStyle["--iron-icon-fill-color"] = this.users[i].color;
+            this.updateStyles();
+          }
+        }
+      });
+
+    </script>
+</dom-module>

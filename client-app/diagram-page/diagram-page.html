@@ -1,0 +1,98 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/socket-io-connection/socket-io-connection.html">
+
+<link rel="import" href="../shared/user-list/user-list.html">
+
+<dom-module id="diagram-page">
+    <template>
+
+      <style>
+
+        svg
+        {
+          border: 1px ridge grey;
+          cursor: none;
+        }
+
+        .overlapping
+        {
+          position: absolute;
+          left: 0;
+          right: 0;
+        }
+
+        #dragging-area
+        {
+          position: relative;
+          width: 500px;
+          height: 500px;
+        }
+
+      </style>
+
+      <socket-io-emitter id="cursor-move-emitter" socket="[[socket]]" event="cursor-move"></socket-io-emitter>
+
+      <div id="dragging-area">
+        <template is="dom-repeat" items="[[diagram.userCollection.users]]" as="user">
+          <svg class="overlapping" width="500" height="500">
+            <circle class="cursor"
+              cx$="[[user.cursor.x]]"
+              cy$="[[user.cursor.y]]"
+              r="5"
+            ></circle>
+          </svg>
+        </template>
+      </div>
+
+      <user-list id="user-list" users="[[diagram.userCollection.users]]"></user-list>
+
+    </template>
+
+    <script>
+
+      Polymer(
+      {
+        is: "diagram-page",
+
+        properties:
+        {
+          diagram:
+          {
+            type: Object,
+            observer: "_onDiagramUpdate"
+          },
+          socket:
+          {
+            type: Object
+          }
+        },
+
+        ready: function()
+        {
+          this.$["dragging-area"].addEventListener("mousemove", (data) =>
+          {
+              let x = data.pageX;
+              let y = data.pageY;
+
+              this.$["cursor-move-emitter"].emit(
+              {
+                x : x,
+                y : y
+              });
+          });
+        },
+
+        _onDiagramUpdate: function()
+        {
+          let cursors = this.querySelectorAll(".cursor");
+          let users = this.diagram.userCollection.users;
+
+          for(let i=0; i<users.length; i++)
+          {
+            cursors[i].style.fill = users[i].color;
+          }
+        }
+      });
+
+    </script>
+</dom-module>

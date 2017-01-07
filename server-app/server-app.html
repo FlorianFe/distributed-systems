@@ -1,0 +1,117 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+
+<link rel="import" href="server-entities/server-entities.html">
+<link rel="import" href="server-commands/server-commands.html">
+<link rel="import" href="express-server/express-server.html">
+<link rel="import" href="socket-io-server/socket-io-server.html">
+
+<link rel="import" href="entities-monitoring/entities-monitoring.html">
+<link rel="import" href="server-log/server-log.html">
+
+<dom-module id="server-app">
+  <template>
+
+    <style is="custom-style">
+
+    :root
+    {
+      --my-custom-color: #dddddd;
+      --paper-tab-ink: var(--my-custom-color);
+      --paper-tabs-selection-bar-color: #2196f3;
+
+      --paper-tabs:
+      {
+          color: #2196f3;
+          font-size: 18px;
+      }
+    }
+
+    </style>
+
+    <!-- non visual elements -->
+    <server-entities id="server-entities"></server-entities>
+    <server-commands id="server-commands"></server-commands>
+    <socket-io-server id="socket-io-server" port="[[port]]"></socket-io-server>
+
+    <!-- visual elements -->
+
+    <paper-tabs id="tab-menu" selected="0">
+      <paper-tab>Server Log</paper-tab>
+      <paper-tab>Entity Inspector</paper-tab>
+    </paper-tabs>
+
+    <entities-monitoring
+      id="entities-monitoring"
+      hidden$="[[_entitiesTabSelected(selectedTab)]]"
+    ></entities-monitoring>
+
+    <server-log
+      id="server-log"
+      hidden$="[[_loggingTabSelected(selectedTab)]]"
+    ></server-log>
+
+  </template>
+
+  <script>
+
+  Polymer(
+  {
+    is: "server-app",
+    properties:
+    {
+      port:
+      {
+        type: Number,
+        value: 3000
+      },
+      selectedTab:
+      {
+        type: Number,
+        value: 0
+      }
+    },
+    ready: function()
+    {
+      let serverLog = this.$["server-log"];
+      let diagramCollection = this.$["server-entities"].diagramCollection;
+      let entityMap = this.$["server-entities"].entityMap;
+      let commandExecuter = this.$["server-commands"].commandExecuter;
+
+      this.$["entities-monitoring"].diagramCollection = diagramCollection;
+
+      this.$["tab-menu"].addEventListener("iron-select", (data) =>
+      {
+        this.selectedTab = this.$["tab-menu"].selected;
+      });
+
+      this.$["socket-io-server"].diagramCollection = diagramCollection;
+      this.$["socket-io-server"].entityMap = entityMap;
+      this.$["socket-io-server"].commandExecuter = commandExecuter;
+      this.$["socket-io-server"].serverLog = serverLog;
+      this.$["socket-io-server"].start();
+
+      this.$["server-commands"].addEventListener("command-executed", (data) =>
+      {
+        let commandClassName = data.detail.commandClassName;
+        serverLog.printInformation(commandClassName + ' was executed');
+      });
+
+      this.$["socket-io-server"].addEventListener("user-connected", (data) =>
+      {
+        let ip = data.detail.ip;
+        serverLog.printInformation("User with IP " + ip + ' connected');
+      });
+    },
+    _entitiesTabSelected: function(selectedTab)
+    {
+      return (selectedTab == 0);
+    },
+    _loggingTabSelected: function(selectedTab)
+    {
+      return (selectedTab == 1);
+    }
+  });
+
+  </script>
+</dom-module>

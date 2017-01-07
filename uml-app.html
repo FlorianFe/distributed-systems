@@ -1,0 +1,57 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/iron-pages/iron-pages.html">
+
+<link rel="import" href="app-configuration/app-configuration.html">
+
+<dom-module id="uml-app">
+  <template>
+    <iron-pages id="iron-pages" selected="0">
+      <app-configuration id="app-configuration"></app-configuration>
+      <server-app id="server-app"></server-app>
+      <client-app id="client-app"></client-app>
+    </iron-pages>
+  </template>
+
+  <script>
+
+    Polymer(
+    {
+      is: "uml-app",
+      properties:
+      {
+
+      },
+      ready: function()
+      {
+        this.$["app-configuration"].addEventListener("server-app-choosen", (data) =>
+        {
+          let port = data.detail.port;
+
+          this.$["server-app"].port = port;
+
+          this.importHref("server-app/server-app.html", () =>
+          {
+            this.$["iron-pages"].selected = 1;
+          });
+        });
+
+        this.$["app-configuration"].addEventListener("client-app-choosen", (data) =>
+        {
+          let ip = data.detail.ip;
+          let port = data.detail.port;
+          let username = data.detail.username;
+
+          this.$["client-app"].ip = ip;
+          this.$["client-app"].port = port;
+          this.$["client-app"].username = username;
+
+          this.importHref("client-app/client-app.html", () =>
+          {
+            this.$["iron-pages"].selected = 2;
+          });
+        });
+      }
+    });
+
+  </script>
+</dom-module>

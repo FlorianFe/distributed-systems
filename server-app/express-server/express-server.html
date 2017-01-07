@@ -1,0 +1,51 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="express-server">
+  <template>
+
+  </template>
+
+  <script>
+    Polymer(
+    {
+      is: "express-server",
+      properties:
+      {
+        port:
+        {
+          type: Number,
+          value: 3000
+        }
+      },
+      ready: function()
+      {
+        let express = require('express')
+        let expressApp = express();
+        let http = require("http").Server(expressApp);
+
+        console.log("starte Server...");
+        console.log(__dirname + '/server-app/express-server/client/presentation/');
+
+        expressApp.use(express.static(__dirname + '/server-app/express-server/client/presentation/'));
+
+        expressApp.use(function(req, res, next)
+        {
+          res.header("Access-Control-Allow-Origin", "*");
+          res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+          next();
+        });
+
+        expressApp.get("/api/diagrams", function(req, res)
+        {
+          res.send(`[{"name": "Diagram 1"}, {"name": "Diagram 2"}, {"name": "Diagram 3"}]`);
+        });
+
+        http.listen(this.port, () =>
+        {
+          console.log('listening on *:' + this.port);
+          this.fire("http-connected", {http: http})
+        });
+      }
+    });
+  </script>
+</dom-module>
