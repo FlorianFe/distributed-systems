@@ -1,0 +1,77 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/socket-io-connection/socket-io-connection.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../bower_components/iron-icons/iron-icons.html">
+
+<link rel="import" href="../shared/user-list/user-list.html">
+
+<dom-module id="chat-page">
+    <template>
+
+      <style>
+
+      </style>
+
+      <socket-io-emitter id="chat-message-send-emitter" socket="[[socket]]" event="chat-message-send"></socket-io-emitter>
+
+      <template is="dom-repeat" items="[[diagram.chatLineCollection.chatLines]]" as="chatLine">
+        <paper-icon-item>
+          <iron-icon icon="icons:question-answer" item-icon></iron-icon>
+          <paper-item-body two-line>
+            <div>
+              <span>[[chatLine.author]]</span>
+              <paper-badge label="[[logLine.amount]]"></paper-badge>
+            </div>
+            <div secondary>[[chatLine.message]]</div>
+          </paper-item-body>
+        </paper-icon-item>
+      </template>
+
+      <paper-input id="chat-line-input"></paper-input>
+      <paper-button raised id="chat-line-button">Senden</paper-button>
+
+      <user-list id="user-list" users="[[diagram.userCollection.users]]"></user-list>
+
+    </template>
+
+    <script>
+
+      Polymer(
+      {
+        is: "chat-page",
+
+        properties:
+        {
+          diagram:
+          {
+            type: Object,
+            observer: "_onDiagramUpdate"
+          },
+          socket:
+          {
+            type: Object
+          }
+        },
+
+        ready: function()
+        {
+          this.$["chat-line-button"].addEventListener("click", () =>
+          {
+            let message = this.$["chat-line-input"].value;
+            this.$["chat-message-send-emitter"].emit({message: message});
+            this.$["chat-line-input"].value = "";
+          });
+        },
+
+        _onDiagramUpdate: function()
+        {
+
+        }
+      });
+
+    </script>
+</dom-module>

@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="server-entities/server-entities.html">
 <link rel="import" href="server-commands/server-commands.html">
@@ -41,15 +42,10 @@
       <paper-tab>Entity Inspector</paper-tab>
     </paper-tabs>
 
-    <entities-monitoring
-      id="entities-monitoring"
-      hidden$="[[_entitiesTabSelected(selectedTab)]]"
-    ></entities-monitoring>
-
-    <server-log
-      id="server-log"
-      hidden$="[[_loggingTabSelected(selectedTab)]]"
-    ></server-log>
+    <iron-pages id="iron-pages" selected="0">
+      <server-log id="server-log"></server-log>
+      <entities-monitoring id="entities-monitoring"></entities-monitoring>
+    </iron-pages>
 
   </template>
 
@@ -82,7 +78,8 @@
 
       this.$["tab-menu"].addEventListener("iron-select", (data) =>
       {
-        this.selectedTab = this.$["tab-menu"].selected;
+        let selected = this.$["tab-menu"].selected;
+        this.$["iron-pages"].selected = selected;
       });
 
       this.$["socket-io-server"].diagramCollection = diagramCollection;
@@ -102,14 +99,6 @@
         let ip = data.detail.ip;
         serverLog.printInformation("User with IP " + ip + ' connected');
       });
-    },
-    _entitiesTabSelected: function(selectedTab)
-    {
-      return (selectedTab == 0);
-    },
-    _loggingTabSelected: function(selectedTab)
-    {
-      return (selectedTab == 1);
     }
   });
 

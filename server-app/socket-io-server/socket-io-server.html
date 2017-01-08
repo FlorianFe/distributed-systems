@@ -66,6 +66,16 @@
             this.io.sockets.emit("diagram-update", {diagram: diagram});
           });
 
+          socket.on('chat-message-send', (data) =>
+          {
+            let user = socket.user;
+            let diagram = this.diagramCollection.getDiagramByName("Neues Diagramm");
+            let message = data.message;
+
+            this._execute(user, new AddChatLineToChatLineCollectionCommand(user, diagram, message));
+            this.io.sockets.emit("diagram-update", {diagram: diagram});
+          });
+
           socket.on('disconnect', () =>
           {
             let diagram = this.diagramCollection.getDiagramByName("Neues Diagramm");

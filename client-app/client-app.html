@@ -4,6 +4,7 @@
 <link rel="import" href="../bower_components/socket-io-connection/socket-io-connection.html">
 
 <link rel="import" href="diagram-page/diagram-page.html">
+<link rel="import" href="chat-page/chat-page.html">
 
 <dom-module id="client-app">
   <template>
@@ -53,6 +54,12 @@
       },
       ready: function()
       {
+        this.$["tab-menu"].addEventListener("iron-select", (data) =>
+        {
+          let selected = this.$["tab-menu"].selected
+          this.$["iron-pages"].selected = selected;
+        });
+
         this.$["socket-io-connection"].addEventListener("connected", (data) =>
         {
           let socket = data.detail.socket;
@@ -67,6 +74,7 @@
           this.$["diagram-update-receiver"].addEventListener("received", (data) =>
           {
             let diagram = data.detail.diagram;
+
             this.$["diagram-page"].diagram = diagram;
             this.$["chat-page"].diagram = diagram;
           });

@@ -10,8 +10,8 @@ var ChatLineCollection = (function (_super) {
         _this.chatLines = new Array();
         return _this;
     }
-    ChatLineCollection.prototype.addChatLine = function (name, message) {
-        this.chatLines.push(new ChatLine(name, message));
+    ChatLineCollection.prototype.addChatLine = function (chatLine) {
+        this.chatLines.push(chatLine);
     };
     return ChatLineCollection;
 }(Entity));

@@ -9,8 +9,8 @@ class ChatLineCollection extends Entity
     this.chatLines = new Array();
   }
 
-  public addChatLine(name, message)
+  public addChatLine(chatLine : ChatLine)
   {
-    this.chatLines.push(new ChatLine(name, message));
+    this.chatLines.push(chatLine);
   }
 }
