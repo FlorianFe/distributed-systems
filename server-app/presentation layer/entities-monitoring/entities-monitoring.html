@@ -1,0 +1,27 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/juicy-jsoneditor/juicy-jsoneditor.html">
+
+<dom-module id="entities-monitoring">
+  <template>
+
+    <juicy-jsoneditor
+      json="[[diagram]]"
+      mode="view">
+    </juicy-jsoneditor>
+
+  </template>
+
+  <script>
+    Polymer(
+    {
+      is: "entities-monitoring",
+      properties:
+      {
+        diagram:
+        {
+          type: Object
+        }
+      }
+    });
+  </script>
+</dom-module>

@@ -2,13 +2,8 @@
 <link rel="import" href="../bower_components/paper-tabs/paper-tabs.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
-<link rel="import" href="server-entities/server-entities.html">
-<link rel="import" href="server-commands/server-commands.html">
-<link rel="import" href="express-server/express-server.html">
-<link rel="import" href="socket-io-server/socket-io-server.html">
-
-<link rel="import" href="entities-monitoring/entities-monitoring.html">
-<link rel="import" href="server-log/server-log.html">
+<link rel="import" href="presentation layer/entities-monitoring/entities-monitoring.html">
+<link rel="import" href="presentation layer/server-log/server-log.html">
 
 <dom-module id="server-app">
   <template>
@@ -49,6 +44,27 @@
 
   </template>
 
+  <script src="command layer/Command.js"></script>
+  <script src="command layer/CommandExecuter.js"></script>
+  <script src="command layer/commands/AddClassToPackageCommand.js"></script>
+  <script src="command layer/commands/AddUserToDiagramCommand.js"></script>
+  <script src="command layer/commands/CursorMoveCommand.js"></script>
+  <script src="command layer/commands/AddChatLineToChatLineCollectionCommand.js"></script>
+
+  <script src="entity layer/Entity.js"></script>
+  <script src="entity layer/EntityMap.js"></script>
+  <script src="entity layer/Diagram.js"></script>
+  <script src="entity layer/diagram - internals/Component.js"></script>
+  <script src="entity layer/diagram - internals/Edge.js"></script>
+  <script src="entity layer/diagram - internals/collections/ChatLineCollection.js"></script>
+  <script src="entity layer/diagram - internals/collections/UserCollection.js"></script>
+  <script src="entity layer/diagram - internals/items/ChatLine.js"></script>
+  <script src="entity layer/diagram - internals/items/User.js"></script>
+  <script src="entity layer/diagram - internals/items/Cursor.js"></script>
+  <!-- TODO UML Elemente -->
+
+  <script src="remote communication layer/SocketIOServer.js"></script>
+
   <script>
 
   Polymer(
@@ -69,35 +85,52 @@
     },
     ready: function()
     {
-      let serverLog = this.$["server-log"];
-      let diagramCollection = this.$["server-entities"].diagramCollection;
-      let entityMap = this.$["server-entities"].entityMap;
-      let commandExecuter = this.$["server-commands"].commandExecuter;
-
-      this.$["entities-monitoring"].diagramCollection = diagramCollection;
-
+      // UI - Logic
       this.$["tab-menu"].addEventListener("iron-select", (data) =>
       {
         let selected = this.$["tab-menu"].selected;
         this.$["iron-pages"].selected = selected;
       });
 
-      this.$["socket-io-server"].diagramCollection = diagramCollection;
-      this.$["socket-io-server"].entityMap = entityMap;
-      this.$["socket-io-server"].commandExecuter = commandExecuter;
-      this.$["socket-io-server"].serverLog = serverLog;
-      this.$["socket-io-server"].start();
+      // Bootstrapping
+      let entityMap = new EntityMap();
+      Entity.setEntityMap(entityMap);
+      let diagram = new Diagram();
+      let commandExecuter = new CommandExecuter();
+      let socketIOServer = new SocketIOServer(this.port, commandExecuter, diagram);
 
-      this.$["server-commands"].addEventListener("command-executed", (data) =>
+      let serverLog = this.$["server-log"];
+      let port = this.port;
+
+      serverLog.addInformationMessage(`Socket.IO Server started on Port ${port}`);
+
+      this.$["entities-monitoring"].diagram = diagram;
+
+      // Event Registration
+      socketIOServer.onCommandExecution((data) =>
       {
-        let commandClassName = data.detail.commandClassName;
-        serverLog.printInformation(commandClassName + ' was executed');
+        let commandName = data.commandName;
+        let userName = data.userName;
+        let userIP = data.userIP;
+
+        serverLog.addInformationMessage(`Command ${commandName} triggered by ${userName} (${userIP})`);
       });
 
-      this.$["socket-io-server"].addEventListener("user-connected", (data) =>
+      socketIOServer.onUnauthorisedCommandExecution((data) =>
       {
-        let ip = data.detail.ip;
-        serverLog.printInformation("User with IP " + ip + ' connected');
+        let commandName = data.commandName;
+        let userIP = data.userIP;
+
+        serverLog.addWarningMessage(`User with IP ${userIP} tried to trigger ${commandName} but wasn't authorized.`);
+      });
+
+      socketIOServer.onCommandExecutionFailed((data) =>
+      {
+        let commandName = data.commandName;
+        let userName = data.userName;
+        let userIP = data.userIP;
+
+        serverLog.addErrorMessage(`Command ${commandName} failed. Triggered by ${userName} (${userIP})`);
       });
     }
   });

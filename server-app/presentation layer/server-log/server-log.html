@@ -1,0 +1,120 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/paper-badge/paper-badge.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-icon-item.html">
+<link rel="import" href="../../../bower_components/paper-item/paper-item-body.html">
+<link rel="import" href="../../../bower_components/iron-icons/iron-icons.html">
+
+<dom-module id="server-log">
+  <template>
+
+    <style is="custom-style">
+
+      .information
+      {
+        --iron-icon-fill-color: #2196f3;
+      }
+
+      .warning
+      {
+        --iron-icon-fill-color: #ff9800;
+      }
+
+      .error
+      {
+        --iron-icon-fill-color: #f44336;
+      }
+
+      paper-badge
+      {
+        --paper-badge-background: #2196f3;
+      }
+
+    </style>
+
+    <div id="scroll-area">
+      <template id="repeat" is="dom-repeat" items="[[logMessages]]" as="logLine">
+        <paper-icon-item>
+          <iron-icon class$="[[logLine.type]]" icon="[[logLine.icon]]" item-icon></iron-icon>
+          <paper-item-body two-line>
+            <div>
+              <span>[[logLine.type]]</span>
+              <paper-badge label="[[logLine.amount]]"></paper-badge>
+            </div>
+            <div secondary>[[logLine.message]]</div>
+          </paper-item-body>
+        </paper-icon-item>
+      </template>
+    </template>
+  </div>
+
+  <script src="LogMessage.js"></script>
+  <script src="log messages/InformationLogMessage.js"></script>
+  <script src="log messages/WarningLogMessage.js"></script>
+  <script src="log messages/ErrorLogMessage.js"></script>
+
+  <script>
+    Polymer(
+    {
+      is: "server-log",
+      properties:
+      {
+        logMessages:
+        {
+          type: Array,
+          value: []
+        }
+      },
+      addInformationMessage: function(message)
+      {
+        if(this._isMessageSameAsLastMessage(message))
+        {
+          this.logMessages[0].incrementAmount();
+          this.notifyPath("logMessages.0.amount");
+        }
+        else
+        {
+          this.unshift("logMessages", (new InformationLogMessage(message)));
+        }
+      },
+      addWarningMessage: function(message)
+      {
+        if(this._isMessageSameAsLastMessage(message))
+        {
+          this.logMessages[0].incrementAmount();
+          this.notifyPath("logMessages.0.amount");
+        }
+        else
+        {
+          this.unshift("logMessages", (new WarningLogMessage(message)));
+        }
+      },
+      addErrorMessage: function(message)
+      {
+        if(this._isMessageSameAsLastMessage(message))
+        {
+          this.logMessages[0].incrementAmount();
+          this.notifyPath("logMessages.0.amount");
+        }
+        else
+        {
+          this.unshift("logMessages", (new ErrorLogMessage(message)));
+        }
+      },
+      _isMessageSameAsLastMessage: function(message)
+      {
+        if(this.logMessages.length > 0)
+        {
+          let lastMessage = this.logMessages[0].getMessage();
+          if(lastMessage === message)
+          {
+            return true;
+          }
+          return false;
+        }
+        return false;
+      }
+    });
+
+  </script>
+</dom-module>

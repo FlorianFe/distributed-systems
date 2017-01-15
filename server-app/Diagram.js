@@ -5,17 +5,13 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var Diagram = (function (_super) {
     __extends(Diagram, _super);
-    function Diagram(name) {
+    function Diagram() {
         var _this = _super.call(this) || this;
-        _this.name = name;
         _this.root = new UMLPackage("Root");
         _this.chatLineCollection = new ChatLineCollection();
         _this.userCollection = new UserCollection();
         return _this;
     }
-    Diagram.prototype.getName = function () {
-        return this.name;
-    };
     Diagram.prototype.getRoot = function () {
         return this.root;
     };
