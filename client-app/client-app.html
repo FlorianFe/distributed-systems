@@ -13,8 +13,7 @@
 
     :root
     {
-      --my-custom-color: #dddddd;
-      --paper-tab-ink: var(--my-custom-color);
+      --paper-tab-ink: #dddddd;
       --paper-tabs-selection-bar-color: #2196f3;
 
       --paper-tabs:
@@ -69,8 +68,6 @@
           this.$["diagram-page"].socket = socket;
           this.$["chat-page"].socket = socket;
 
-          this.$["register-emitter"].emit({userName: this.username});
-
           this.$["diagram-update-receiver"].addEventListener("received", (data) =>
           {
             let diagram = data.detail.diagram;
@@ -78,6 +75,8 @@
             this.$["diagram-page"].diagram = diagram;
             this.$["chat-page"].diagram = diagram;
           });
+
+          this.$["register-emitter"].emit({userName: this.username});
         });
       }
     });

@@ -12,8 +12,7 @@
 
     :root
     {
-      --my-custom-color: #dddddd;
-      --paper-tab-ink: var(--my-custom-color);
+      --paper-tab-ink: #dddddd;
       --paper-tabs-selection-bar-color: #2196f3;
 
       --paper-tabs:
@@ -46,22 +45,25 @@
 
   <script src="command layer/Command.js"></script>
   <script src="command layer/CommandExecuter.js"></script>
-  <script src="command layer/commands/AddClassToPackageCommand.js"></script>
+
   <script src="command layer/commands/AddUserToDiagramCommand.js"></script>
   <script src="command layer/commands/CursorMoveCommand.js"></script>
   <script src="command layer/commands/AddChatLineToChatLineCollectionCommand.js"></script>
+  <script src="command layer/commands/AddUMLClassToUMLElementCollectionCommand.js"></script>
+  <script src="command layer/commands/RemoveUMLClassFromUMLElementCollectionCommand.js"></script>
+  <script src="command layer/commands/MoveUMLClassCommand.js"></script>
 
   <script src="entity layer/Entity.js"></script>
   <script src="entity layer/EntityMap.js"></script>
   <script src="entity layer/Diagram.js"></script>
-  <script src="entity layer/diagram - internals/Component.js"></script>
-  <script src="entity layer/diagram - internals/Edge.js"></script>
   <script src="entity layer/diagram - internals/collections/ChatLineCollection.js"></script>
   <script src="entity layer/diagram - internals/collections/UserCollection.js"></script>
+  <script src="entity layer/diagram - internals/collections/UMLElementCollection.js"></script>
   <script src="entity layer/diagram - internals/items/ChatLine.js"></script>
   <script src="entity layer/diagram - internals/items/User.js"></script>
   <script src="entity layer/diagram - internals/items/Cursor.js"></script>
-  <!-- TODO UML Elemente -->
+  <script src="entity layer/diagram - internals/items/UMLElement.js"></script>
+  <script src="entity layer/diagram - internals/items/uml elements/UMLClass.js"></script>
 
   <script src="remote communication layer/SocketIOServer.js"></script>
 
@@ -129,8 +131,9 @@
         let commandName = data.commandName;
         let userName = data.userName;
         let userIP = data.userIP;
+        let exception = data.exception;
 
-        serverLog.addErrorMessage(`Command ${commandName} failed. Triggered by ${userName} (${userIP})`);
+        serverLog.addErrorMessage(`Command ${commandName} failed. Triggered by ${userName} (${userIP}). Exception: ${exception}`);
       });
     }
   });

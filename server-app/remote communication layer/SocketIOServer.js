@@ -26,6 +26,31 @@ var SocketIOServer = (function () {
                 var y = data.y;
                 _this.executeCommandBySocket(socket, new CursorMoveCommand(user, _this.diagram, x, y));
             });
+            socket.on('create-uml-class', function (data) {
+                var user = socket.user;
+                var name = data.name;
+                var x = data.x;
+                var y = data.y;
+                var width = data.width;
+                var height = data.height;
+                _this.executeCommandBySocket(socket, new AddUMLClassToUMLElementCollectionCommand(user, _this.diagram, name, x, y, width, height));
+            });
+            socket.on('remove-uml-class', function (data) {
+                var user = socket.user;
+                var uid = data.uid;
+                var entityMap = Entity.getEntityMap();
+                var umlClass = (entityMap.getEntityByUid(uid));
+                _this.executeCommandBySocket(socket, new RemoveUMLClassFromUMLElementCollectionCommand(user, _this.diagram, umlClass));
+            });
+            socket.on('move-uml-class', function (data) {
+                var user = socket.user;
+                var uid = data.uid;
+                var entityMap = Entity.getEntityMap();
+                var umlClass = (entityMap.getEntityByUid(uid));
+                var x = data.x;
+                var y = data.y;
+                _this.executeCommandBySocket(socket, new MoveUMLClassCommand(user, umlClass, x, y));
+            });
             socket.on('chat-message-send', function (data) {
                 var user = socket.user;
                 var message = data.message;
@@ -50,7 +75,7 @@ var SocketIOServer = (function () {
                 this.triggerOnCommandExecutionCallbacks(userIp, userName, commandName);
             }
             catch (e) {
-                this.triggerOnCommandExecutionFailedCallbacks(userIp, userName, commandName);
+                this.triggerOnCommandExecutionFailedCallbacks(userIp, userName, commandName, e);
             }
         }
         else {
@@ -105,12 +130,13 @@ var SocketIOServer = (function () {
             });
         });
     };
-    SocketIOServer.prototype.triggerOnCommandExecutionFailedCallbacks = function (userIP, userName, commandName) {
+    SocketIOServer.prototype.triggerOnCommandExecutionFailedCallbacks = function (userIP, userName, commandName, exception) {
         this.onCommandExecutionFailedCallbacks.forEach(function (callback) {
             callback({
                 userName: userName,
                 userIP: userIP,
-                commandName: commandName
+                commandName: commandName,
+                exception: exception
             });
         });
     };

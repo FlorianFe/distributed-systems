@@ -1,0 +1,186 @@
+<link rel="import" href="../../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../../bower_components/socket-io-connection/socket-io-connection.html">
+<link rel="import" href="../../../bower_components/paper-card/paper-card.html">
+
+<dom-module id="uml-element">
+    <template>
+
+      <style>
+
+        :host
+        {
+          user-select: none;
+
+          /* disable Select */
+          -webkit-user-select: none;
+          -khtml-user-select: none;
+          -moz-user-select: -moz-none;
+          -o-user-select: none;
+
+          --paper-card:
+          {
+            width: 100%;
+            height: 100%;
+            line-height: 100px;
+            text-align: center;
+          }
+        }
+
+        paper-card
+        {
+          @apply(--shadow-elevation-2dp);
+        }
+
+        paper-card.selected
+        {
+          @apply(--shadow-elevation-6dp);
+        }
+
+        :host > div
+        {
+          position: absolute;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+      </style>
+
+      <socket-io-emitter id="remove-uml-class-emitter" socket="[[socket]]" event="remove-uml-class"></socket-io-emitter>
+      <socket-io-emitter id="move-uml-class-emitter" socket="[[socket]]" event="move-uml-class"></socket-io-emitter>
+
+      <div
+        style$="
+          left: [[x]]px;
+          top: [[y]]px;
+          width: [[width]]px;
+          height: [[height]]px;
+        "
+      >
+        <paper-card class$="[[_getSelectedClassIfSelected(selected)]]">
+          <b style$="color: [[lastUserModifiedBy.color]]">
+            [[name]]
+          </b>
+        </paper-card>
+      </div>
+
+    </template>
+
+    <script>
+
+      Polymer(
+      {
+        is: "uml-element",
+
+        properties:
+        {
+          uid:
+          {
+            type: Number,
+            observer: "_cleanup"
+          },
+          name: String,
+          lastUserModifiedBy: Object,
+          x: Number,
+          y: Number,
+          width: Number,
+          height: Number,
+          selected:
+          {
+            type: Boolean,
+            value: false
+          },
+          dragged:
+          {
+            type: Boolean,
+            value: false
+          },
+          draggingPointX: Number,
+          draggingPointY: Number,
+          tileSize:
+          {
+            type: Number,
+            value: 50
+          },
+          socket: Object
+        },
+
+        ready: function()
+        {
+          this.addEventListener("click", () =>
+          {
+            setTimeout(() => //client-side equilavent for "process.nextTick"
+            {
+              // Force update AFTER click-events of parent-elements
+              this.selected = true;
+            }, 0);
+          });
+
+          document.addEventListener("keyup", (data) =>
+          {
+            if(this.selected)
+            {
+              let keyCode = data.keyCode;
+
+              if(keyCode === 82) // R
+              {
+                // TODO: Renaming
+              }
+
+              if(keyCode === 46) // delete
+              {
+                this.$["remove-uml-class-emitter"].emit({uid: this.uid});
+              }
+            }
+          });
+
+          document.addEventListener("mouseup", () =>
+          {
+            this.dragged = false;
+          });
+
+          document.addEventListener("mousemove", (data) =>
+          {
+            if(this.dragged)
+            {
+              let x = data.pageX - Polymer.dom(this).parentNode.offsetLeft;
+              let y = data.pageY - Polymer.dom(this).parentNode.offsetTop;
+
+              let xMousePositionInOtherTile = (Math.floor(x/this.tileSize) !== Math.floor(this.x/this.tileSize));
+              let yMousePositionInOtherTile = (Math.floor(y/this.tileSize) !== Math.floor(this.y/this.tileSize));
+
+              if(xMousePositionInOtherTile || yMousePositionInOtherTile)
+              {
+
+                this.$["move-uml-class-emitter"].emit(
+                {
+                  uid: this.uid,
+                  x : Math.floor(x/this.tileSize) * this.tileSize,
+                  y : Math.floor(y/this.tileSize) * this.tileSize
+                });
+              }
+            }
+          });
+
+          this.addEventListener("mousedown", () =>
+          {
+            this.dragged = true;
+          });
+        },
+        detached: function()
+        {
+          this._cleanup();
+        },
+        _cleanup: function()
+        {
+          this.selected = false;
+          this.dragged = false;
+        },
+        _getSelectedClassIfSelected: function(selected)
+        {
+          return (selected) ? "selected" : "";
+        }
+      });
+
+    </script>
+</dom-module>

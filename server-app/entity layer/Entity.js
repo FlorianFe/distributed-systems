@@ -1,8 +1,9 @@
 var Entity = (function () {
     function Entity() {
-        this.uid = Entity.uuidCounter;
+        this.uid = Entity.uidCounter;
         this.type = this.constructor;
-        Entity.uuidCounter++;
+        Entity.uidCounter++;
+        Entity.entityMap.addEntity(this);
     }
     Entity.prototype.getUid = function () {
         return this.uid;
@@ -10,10 +11,17 @@ var Entity = (function () {
     Entity.prototype.getType = function () {
         return this.type;
     };
+    Entity.prototype.equals = function (entity) {
+        var uid = entity.getUid();
+        return (this.uid === uid);
+    };
     Entity.setEntityMap = function (entityMap) {
         Entity.entityMap = entityMap;
     };
+    Entity.getEntityMap = function () {
+        return this.entityMap;
+    };
     return Entity;
 }());
-Entity.uuidCounter = 0;
+Entity.uidCounter = 0;
 //# sourceMappingURL=Entity.js.map

@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/polymer/polymer.html">
 <link rel="import" href="../../bower_components/socket-io-connection/socket-io-connection.html">
 
+<link rel="import" href="uml-element/uml-element.html">
 <link rel="import" href="../shared/user-list/user-list.html">
+
 
 <dom-module id="diagram-page">
     <template>
@@ -11,7 +13,6 @@
         svg
         {
           border: 1px ridge grey;
-          cursor: none;
         }
 
         .overlapping
@@ -24,23 +25,49 @@
         #dragging-area
         {
           position: relative;
-          width: 500px;
+          width: 100%;
           height: 500px;
+          border: 1px ridge grey;
+          user-select: none;
+
+          background-size: 50px 50px;
+          background-image:
+            linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
         }
 
       </style>
 
       <socket-io-emitter id="cursor-move-emitter" socket="[[socket]]" event="cursor-move"></socket-io-emitter>
+      <socket-io-emitter id="create-uml-class-emitter" socket="[[socket]]" event="create-uml-class"></socket-io-emitter>
 
       <div id="dragging-area">
-        <template is="dom-repeat" items="[[diagram.userCollection.users]]" as="user">
-          <svg class="overlapping" width="500" height="500">
-            <circle class="cursor"
-              cx$="[[user.cursor.x]]"
-              cy$="[[user.cursor.y]]"
-              r="5"
-            ></circle>
-          </svg>
+        <!-- Network is too slow for this
+          <template is="dom-repeat" items="[[diagram.userCollection.users]]" as="user">
+            <svg class="overlapping" width="500" height="500">
+              <circle
+                class="cursor"
+                style$="fill: [[user.color]]"
+                cx$="[[user.cursor.x]]"
+                cy$="[[user.cursor.y]]"
+                r="5"
+              ></circle>
+            </svg>
+          </template>
+        -->
+
+        <template is="dom-repeat" items="[[diagram.umlElementCollection.umlElements]]" as="umlElement">
+          <uml-element
+            uid="[[umlElement.uid]]"
+            name="[[umlElement.name]]"
+            x="[[umlElement.x]]"
+            y="[[umlElement.y]]"
+            width="[[umlElement.width]]"
+            height="[[umlElement.height]]"
+            last-user-modified-by="[[umlElement.lastUserModifiedBy]]"
+            socket="[[socket]]"
+            tile-size="[[tileSize]]"
+          ></uml-element>
         </template>
       </div>
 
@@ -56,41 +83,93 @@
 
         properties:
         {
-          diagram:
+          diagram: Object,
+          socket: Object,
+          currentMousePositionX: Number,
+          currentMousePositionY: Number,
+          selectedUMLElement: Object,
+          tileSize:
           {
-            type: Object,
-            observer: "_onDiagramUpdate"
-          },
-          socket:
-          {
-            type: Object
+            type: Number,
+            value: 50
           }
         },
 
         ready: function()
         {
+          this.addEventListener("click", (data) =>
+          {
+            let umlElements = this.querySelectorAll("uml-element");
+
+            umlElements.forEach((element) =>
+            {
+              element.selected = false;
+            });
+          });
+
+          /*
+          // Network Connection may be too slow for this feature...
           this.$["dragging-area"].addEventListener("mousemove", (data) =>
           {
-              let x = data.pageX;
-              let y = data.pageY;
+              let x = data.pageX - this.offsetLeft;
+              let y = data.pageY - this.offsetTop;
 
+
+
+              this.currentMousePositionX = x;
+              this.currentMousePositionY = y;
+          });
+          */
+
+          this.$["dragging-area"].addEventListener("mousemove", (data) =>
+          {
+              let x = data.pageX - this.offsetLeft;
+              let y = data.pageY - this.offsetTop;
+
+              /*
+              // Network Connection is to slow to use this feature
               this.$["cursor-move-emitter"].emit(
               {
                 x : x,
                 y : y
               });
+              */
+
+              this.currentMousePositionX = x;
+              this.currentMousePositionY = y;
+          });
+
+          document.addEventListener("keyup", (data) =>
+          {
+            let keyCode = data.keyCode;
+
+            if(keyCode === 32) // Space
+            {
+              let x = Math.floor(this.currentMousePositionX / this.tileSize) * this.tileSize;
+              let y = Math.floor(this.currentMousePositionY / this.tileSize) * this.tileSize;
+
+              this.$["create-uml-class-emitter"].emit(
+              {
+                name : "Neue Klasse",
+                x : x,
+                y : y,
+                width: 200,
+                height: 100
+              });
+            }
           });
         },
-
-        _onDiagramUpdate: function()
+        attached: function()
         {
-          let cursors = this.querySelectorAll(".cursor");
-          let users = this.diagram.userCollection.users;
-
-          for(let i=0; i<users.length; i++)
+          setTimeout(() =>
           {
-            cursors[i].style.fill = users[i].color;
-          }
+            this.$["cursor-move-emitter"].emit(
+            {
+              x : 0,
+              y : 0
+            });
+
+          }, 1000);
         }
       });
 

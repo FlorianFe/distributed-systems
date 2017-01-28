@@ -49,6 +49,40 @@ class SocketIOServer
         this.executeCommandBySocket(socket, new CursorMoveCommand(user, this.diagram, x, y));
       });
 
+      socket.on('create-uml-class', (data) =>
+      {
+        let user = socket.user;
+        let name = data.name;
+        let x = data.x;
+        let y = data.y;
+        let width = data.width;
+        let height = data.height;
+
+        this.executeCommandBySocket(socket, new AddUMLClassToUMLElementCollectionCommand(user, this.diagram, name, x, y, width, height));
+      });
+
+      socket.on('remove-uml-class', (data) =>
+      {
+        let user = socket.user;
+        let uid = data.uid;
+        let entityMap = Entity.getEntityMap();
+        let umlClass = <UMLClass> (entityMap.getEntityByUid(uid));
+
+        this.executeCommandBySocket(socket, new RemoveUMLClassFromUMLElementCollectionCommand(user, this.diagram, umlClass));
+      });
+
+      socket.on('move-uml-class', (data) =>
+      {
+        let user = socket.user;
+        let uid = data.uid;
+        let entityMap = Entity.getEntityMap();
+        let umlClass = <UMLClass> (entityMap.getEntityByUid(uid));
+        let x = data.x;
+        let y = data.y;
+
+        this.executeCommandBySocket(socket, new MoveUMLClassCommand(user, umlClass, x, y));
+      });
+
       socket.on('chat-message-send', (data) =>
       {
         let user = socket.user;
@@ -85,7 +119,7 @@ class SocketIOServer
       }
       catch(e)
       {
-        this.triggerOnCommandExecutionFailedCallbacks(userIp, userName, commandName);
+        this.triggerOnCommandExecutionFailedCallbacks(userIp, userName, commandName, e);
       }
     }
     else
@@ -170,7 +204,7 @@ class SocketIOServer
     });
   }
 
-  private triggerOnCommandExecutionFailedCallbacks(userIP : String, userName : String, commandName : String)
+  private triggerOnCommandExecutionFailedCallbacks(userIP : String, userName : String, commandName : String, exception : Error)
   {
     this.onCommandExecutionFailedCallbacks.forEach((callback) =>
     {
@@ -178,7 +212,8 @@ class SocketIOServer
       {
         userName : userName,
         userIP : userIP,
-        commandName : commandName
+        commandName : commandName,
+        exception: exception
       });
     });
   }

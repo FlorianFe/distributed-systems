@@ -7,10 +7,14 @@ var Diagram = (function (_super) {
     __extends(Diagram, _super);
     function Diagram() {
         var _this = _super.call(this) || this;
+        _this.umlElementCollection = new UMLElementCollection();
         _this.chatLineCollection = new ChatLineCollection();
         _this.userCollection = new UserCollection();
         return _this;
     }
+    Diagram.prototype.getUmlElementCollection = function () {
+        return this.umlElementCollection;
+    };
     Diagram.prototype.getChatLineCollection = function () {
         return this.chatLineCollection;
     };
