@@ -128,6 +128,11 @@ class SocketIOServer
     }
   }
 
+  public setDiagram(diagram : Diagram)
+  {
+      this.diagram = diagram;
+      this.io.sockets.emit("diagram-update", {diagram: this.diagram});
+  }
 
   // === Observer Part === ///
 

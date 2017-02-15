@@ -82,6 +82,10 @@ var SocketIOServer = (function () {
             this.triggerOnUnatuorizedCommandExecutionCallbacks(userIp, commandName);
         }
     };
+    SocketIOServer.prototype.setDiagram = function (diagram) {
+        this.diagram = diagram;
+        this.io.sockets.emit("diagram-update", { diagram: this.diagram });
+    };
     // === Observer Part === ///
     SocketIOServer.prototype.onUserConnection = function (callback) {
         this.onUserConnectionCallbacks.push(callback);

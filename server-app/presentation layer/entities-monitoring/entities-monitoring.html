@@ -9,6 +9,9 @@
       mode="view">
     </juicy-jsoneditor>
 
+    <button id="save-button">Save</button>
+    <button id="load-button">Load</button>
+
   </template>
 
   <script>
@@ -21,6 +24,18 @@
         {
           type: Object
         }
+      },
+      ready: function()
+      {
+        this.$["save-button"].addEventListener("click", () =>
+        {
+          this.diagram.serializeToJSONFile("entities.json");
+        });
+
+        this.$["load-button"].addEventListener("click", () =>
+        {
+          this.fire("load-from-json-file", {});
+        });
       }
     });
   </script>
