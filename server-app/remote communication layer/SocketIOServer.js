@@ -1,7 +1,8 @@
 var SocketIOServer = (function () {
     function SocketIOServer(port, commandExecuter, diagram) {
         var _this = this;
-        this.io = require("socket.io").listen(port);
+        var http = require('http').createServer().listen(port, '0.0.0.0');
+        this.io = require("socket.io").listen(http);
         this.diagram = diagram;
         this.commandExecuter = commandExecuter;
         this.onUserConnectionCallbacks = [];

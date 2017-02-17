@@ -13,7 +13,8 @@ class SocketIOServer
 
   constructor(port : number, commandExecuter : CommandExecuter, diagram : Diagram)
   {
-    this.io = require("socket.io").listen(port);
+    let http = require('http').createServer().listen(port, '0.0.0.0');
+    this.io = require("socket.io").listen(http);
     this.diagram = diagram;
     this.commandExecuter = commandExecuter;
 
