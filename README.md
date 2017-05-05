@@ -27,7 +27,7 @@ In order to use this application you need to have node.js and bower installed.
 # Clone this repository
 git clone https://github.com/florianfe/distributed-systems
 # Go into the repository
-cd Wikipedia-Desktop-App
+cd distributed-systems
 # Install npm dependencies
 npm install
 # Install bower dependencies
